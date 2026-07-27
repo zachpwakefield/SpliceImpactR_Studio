@@ -1,0 +1,20 @@
+Package: SpliceImpactRShiny
+Type: Shiny
+Title: SpliceImpactR Shiny App
+Version: 4.0.0
+Description: Interactive Shiny workflow for loading splicing evidence,
+    annotations, protein features, and interaction data and running
+    SpliceImpactR analyses.
+Imports:
+    shiny,
+    bslib,
+    DT,
+    data.table,
+    ggplot2,
+    digest,
+    jsonlite,
+    BiocParallel,
+    SpliceImpactR
+Remotes:
+    fiszbein-lab/SpliceImpactR
+Encoding: UTF-8

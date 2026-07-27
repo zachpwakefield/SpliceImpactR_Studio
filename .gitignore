@@ -1,0 +1,58 @@
+# Local credentials, shell history, and IDE state
+.Rhistory
+.RData
+.Ruserdata
+.Renviron
+.Renviron.*
+.env
+.env.*
+.Rproj.user/
+.vscode/
+.idea/
+rsconnect/
+
+# Operating-system and generated logs
+.DS_Store
+*.log
+*.tmp
+*.lock
+!renv.lock
+
+# Runtime caches and session data
+annotation_cache/
+runtime_cache/
+references/
+renv/library/
+renv/staging/
+renv/python/
+
+# Biological data and serialized analysis objects
+*.rds
+*.RDS
+*.RData
+*.qs
+*.parquet
+*.feather
+*.gtf
+*.gtf.gz
+*.fa
+*.fa.gz
+*.fasta
+*.fasta.gz
+*.fastq
+*.fastq.gz
+*.bam
+*.bai
+*.zip
+
+# Generated or downloaded project outputs
+elm_ppi_outputs/
+three_did_outputs/
+
+# Archived and superseded local application copies
+archive/
+app2.R
+ui2.R
+server2.R
+deploy_app2.R
+V4_README.md
