@@ -79,6 +79,28 @@ dry_run <- tolower(trimws(Sys.getenv(
   "SPLICEIMPACTR_DEPLOY_DRY_RUN",
   unset = "false"
 ))) %in% c("1", "true", "yes", "on")
+deploy_account <- trimws(Sys.getenv(
+  "SPLICEIMPACTR_RSCONNECT_ACCOUNT",
+  unset = "fiszbein-lab"
+))
+deploy_server <- trimws(Sys.getenv(
+  "SPLICEIMPACTR_RSCONNECT_SERVER",
+  unset = "shinyapps.io"
+))
+deploy_app_name <- trimws(Sys.getenv(
+  "SPLICEIMPACTR_RSCONNECT_APP_NAME",
+  unset = "SpliceImpactR_Studio"
+))
+
+message(
+  "Deployment target: ",
+  deploy_account,
+  " / ",
+  deploy_server,
+  " / ",
+  deploy_app_name,
+  "."
+)
 
 if (isTRUE(dry_run)) {
   paths <- rsconnect::listDeploymentFiles(
@@ -94,8 +116,11 @@ if (isTRUE(dry_run)) {
   rsconnect::deployApp(
     appDir = deploy_dir,
     appPrimaryDoc = "app.R",
-    appName = "SpliceImpactR_Studio",
+    appName = deploy_app_name,
     appFiles = app_files,
+    account = deploy_account,
+    server = deploy_server,
+    forceUpdate = TRUE,
     launch.browser = FALSE
   )
 }

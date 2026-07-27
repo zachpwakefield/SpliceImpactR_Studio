@@ -1,91 +1,107 @@
 # SpliceImpactR Studio
 
-SpliceImpactR Studio is a Shiny interface for exploring how alternative
-splicing can alter transcripts, protein sequence, domains, and protein-protein
-interactions. It provides an interactive workflow around the
-[SpliceImpactR R package](https://github.com/fiszbein-lab/SpliceImpactR).
+SpliceImpactR Studio is a browser-based Shiny application for connecting
+alternative-splicing changes to transcript, protein, domain, and
+protein-protein interaction consequences.
 
-```mermaid
-flowchart LR
-  A["Annotations"] --> D["Differential inclusion"]
-  B["rMATS or event tables"] --> D
-  D --> M["Map events to transcripts"]
-  C["Protein features"] --> P["Sequence and domain consequences"]
-  M --> P
-  P --> I["PPI-switch analysis"]
-  I --> R["Integrated results, enrichment, and exports"]
-```
+## Use the web app
 
-## Workflow
+**[Launch SpliceImpactR Studio](https://fiszbein-lab.shinyapps.io/SpliceImpactR_Studio/)**
 
-1. **Load annotations.** Use the small packaged test reference, a locally
-   prepared GENCODE reference, or—in hosted mode—upload the official human
-   GENCODE 45 GTF, transcript FASTA, and protein FASTA files through the
-   browser. A deployment may also provide a read-only preprocessed GENCODE 45
-   bundle for faster shared access.
-2. **Load splicing evidence.** Use the demonstration workspace, upload a
-   self-contained rMATS project ZIP with its sample manifest, or import a
-   normalized raw-event or post-DI table. When present, `control` and `case`
-   are selected as the default reference and comparison conditions.
-3. **Load protein features.** Use packaged demonstration features, query
-   supported feature sources through BioMart/Ensembl, or upload protein and
-   exon feature tables.
-4. **Run the analysis.** The full pipeline performs differential inclusion,
-   transcript matching, sequence/frame comparison, domain analysis, and
-   PPI-switch analysis. Results are available as bounded interactive previews,
-   plots, enrichment summaries, provenance records, and downloadable tables.
+The hosted app provides a guided demonstration as well as workflows for your
+own annotations, splicing evidence, protein features, and interaction data.
 
-The default PPI network is supplied by SpliceImpactR and loaded only when it is
-needed. A compatible interaction table can also be uploaded for a session.
+### Quick demonstration
 
-## Run locally
+1. Open the app and click **Load Demo Workspace**.
+2. Confirm the comparison. The demonstration defaults to reference
+   **control** and case **case**.
+3. Click **Run Full Pipeline**. The app loads the selected bundled PPI network
+   and runs differential inclusion, transcript mapping, sequence/frame
+   comparison, domain analysis, and PPI-switch analysis.
+4. Review the **DI**, **Consequences**, **Explore**, **Enrichment**, and
+   **Exports** tabs.
 
-Install the dependencies recorded in `renv.lock`, including the pinned
-SpliceImpactR revision, then launch the app from the repository root:
+The demonstration uses a small GENCODE 45 subset and packaged example data. It
+is intended for learning and validation, not genome-wide analysis.
+
+## Analyze your own data
+
+The controls on the left follow the workflow below.
+
+### 1. Load a reference
+
+Choose one of the available annotation sources and click **Load Annotations**:
+
+- **Bundled human GENCODE 45 reference — recommended:** uses the full,
+  preprocessed GRCh38.p14 reference supplied by the hosted app. Nothing needs
+  to be downloaded or uploaded.
+- **Bundled test set:** loads the small reference used by the demonstration.
+- **Load GENCODE 45 files from this computer:** upload the official annotation
+  GTF, transcript FASTA, and protein FASTA files. The app provides direct
+  GENCODE download links for obtaining these files on your computer first.
+
+Browser-uploaded reference files are used only in an isolated app session and
+are removed when that session ends.
+
+### 2. Load splicing evidence
+
+Open **Event Inputs** and select one of the following:
+
+- a self-contained rMATS project ZIP containing its sample manifest;
+- a normalized raw-event table with sample-level evidence; or
+- a post-differential-inclusion event table.
+
+After loading the data, confirm which condition is the reference and which is
+the case. When conditions named `control` and `case` are present, the app
+selects them automatically.
+
+### 3. Load protein features
+
+Open **Protein Features** and either:
+
+- query matching features from Ensembl/BioMart; GENCODE 45 corresponds to
+  Ensembl 111;
+- upload a normalized SpliceImpactR feature table; or
+- upload a table containing manual protein coordinates.
+
+The packaged feature subset is compatible only with the demonstration
+reference. A full-reference analysis requires queried or uploaded features.
+
+### 4. Select interaction data and run
+
+Under **PPI + Background**, keep the bundled SpliceImpactR interaction network
+or upload a normalized PPI table. **Run Full Pipeline** loads the selected
+network on demand and performs the complete analysis. Individual stages can
+also be run from **Analysis Controls**.
+
+## Results and downloads
+
+The app provides interactive previews and plots for differential inclusion,
+matched transcript pairs, nucleotide and protein consequences, domain changes,
+PPI changes, transcript exploration, and gene-set enrichment. The **Exports**
+tab downloads result tables as CSV files and also provides an activity log and
+provenance record.
+
+## Project
+
+SpliceImpactR Studio is an interactive interface for the
+[fiszbein-lab/SpliceImpactR](https://github.com/fiszbein-lab/SpliceImpactR) R
+package. This lightweight repository contains the application code; it does
+not publish user data, reference bundles, cached downloads, or analysis
+outputs.
+
+For local development, restore the locked dependencies and launch from the
+repository root:
 
 ```r
 renv::restore()
 shiny::runApp(".")
 ```
 
-To preview the hosted interface locally:
-
-```sh
-SPLICEIMPACTR_HOSTED=true Rscript -e 'shiny::runApp(".")'
-```
-
-## Data and references
-
-This repository intentionally contains **code only**. It does not distribute
-GENCODE references, user data, protein-feature downloads, PPI exports, caches,
-or serialized analysis objects.
-
-The app remains usable without external data through the example datasets in
-SpliceImpactR. For full human analyses, obtain the matching GENCODE 45 source
-files or prepare the following local preprocessed triplet:
-
-```text
-human_gencode_v45.gtf.rds
-human_gencode_v45_sequences.rds
-human_gencode_v45_hybrids.rds
-```
-
-These files remain untracked. If all three are present beside `app.R`,
-`deploy_app.R` includes them in the deployment automatically; otherwise it
-creates a source-only deployment with the test and browser-upload workflows.
-
-Validate the deployment manifest without uploading anything:
-
-```sh
-SPLICEIMPACTR_DEPLOY_DRY_RUN=true Rscript deploy_app.R
-```
-
-## Verification
+Run the automated checks with:
 
 ```sh
 Rscript tests/testthat.R
 Rscript tests/smoke_demo.R
 ```
-
-The smoke test uses the full local reference when available and otherwise
-validates the source-only demonstration workflow.
